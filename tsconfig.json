@@ -12,5 +12,5 @@
     "types": []
   },
   "include": ["src", "vite.config.ts"],
-  "exclude": ["dist", "node_modules", "supabase/functions/server", "api", "types"]
+  "exclude": ["dist", "node_modules", "supabase/functions/make-server-f3bc3770", "api", "types"]
 }

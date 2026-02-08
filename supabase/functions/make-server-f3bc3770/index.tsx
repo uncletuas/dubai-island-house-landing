@@ -21,12 +21,15 @@ app.use(
 );
 
 // Health check endpoint
-app.get("/make-server-f3bc3770/health", (c) => {
+// NOTE: In Supabase Edge Functions, the function name is already part of the public URL:
+//   /functions/v1/<function-name>/<path>
+// So routes should be defined relative to that base (do NOT include the function name again).
+app.get("/health", (c) => {
   return c.json({ status: "ok" });
 });
 
 // Lead submission endpoint
-app.post("/make-server-f3bc3770/submit-lead", async (c) => {
+app.post("/submit-lead", async (c) => {
   try {
     const body = await c.req.json();
     const { name, whatsapp, email, timestamp } = body;
@@ -38,18 +41,32 @@ app.post("/make-server-f3bc3770/submit-lead", async (c) => {
 
     console.log("Received lead submission:", { name, whatsapp, email, timestamp });
 
-    // Store lead in KV store
     const leadId = `lead_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    await kv.set(leadId, {
-      name,
-      whatsapp,
-      email,
-      timestamp: timestamp || new Date().toISOString(),
-      source: "dubaiislandhouse.com",
-    });
+    const submittedAt = timestamp || new Date().toISOString();
+
+    // Store lead in KV store (non-blocking for email delivery)
+    try {
+      await kv.set(leadId, {
+        name,
+        whatsapp,
+        email,
+        timestamp: submittedAt,
+        source: "dubaiislandhouse.com",
+      });
+    } catch (kvError) {
+      console.error("KV store error:", kvError);
+    }
 
     // Send email via Resend
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    const leadNotificationEmail =
+      Deno.env.get("LEAD_NOTIFICATION_EMAIL") || "info@dubaiislandhouse.com";
+    const resendFromEmail =
+      Deno.env.get("RESEND_FROM_EMAIL") ||
+      "Dubai Island House <onboarding@resend.dev>";
+    let emailSent = false;
+    let emailError: string | null = null;
+
     if (resendApiKey) {
       try {
         const emailResponse = await fetch("https://api.resend.com/emails", {
@@ -59,9 +76,9 @@ app.post("/make-server-f3bc3770/submit-lead", async (c) => {
             "Authorization": `Bearer ${resendApiKey}`,
           },
           body: JSON.stringify({
-            from: "Dubai Island House <onboarding@resend.dev>",
-            to: ["services.opaltech@gmail.com"],
-            subject: "🏡 New Lead: Dubai Waterfront Property",
+            from: resendFromEmail,
+            to: [leadNotificationEmail],
+            subject: "New Lead: Dubai Waterfront Property",
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h2 style="color: #D4AF37;">New Lead Submission</h2>
@@ -70,7 +87,7 @@ app.post("/make-server-f3bc3770/submit-lead", async (c) => {
                   <p><strong>Name:</strong> ${name}</p>
                   <p><strong>WhatsApp:</strong> ${whatsapp}</p>
                   <p><strong>Email:</strong> ${email}</p>
-                  <p><strong>Time:</strong> ${timestamp || new Date().toISOString()}</p>
+                  <p><strong>Time:</strong> ${submittedAt}</p>
                 </div>
                 <p style="color: #666; font-size: 14px;">Source: dubaiislandhouse.com</p>
               </div>
@@ -80,15 +97,20 @@ app.post("/make-server-f3bc3770/submit-lead", async (c) => {
 
         if (!emailResponse.ok) {
           const errorText = await emailResponse.text();
-          console.error("Resend email error:", errorText);
+          emailError = errorText || "Resend email failed";
+          console.error("Resend email error:", emailError);
         } else {
           console.log("Email sent successfully via Resend");
+          emailSent = true;
         }
-      } catch (emailError) {
-        console.error("Error sending email:", emailError);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.error("Error sending email:", message);
+        emailError = message;
       }
     } else {
-      console.warn("RESEND_API_KEY not configured");
+      emailError = "RESEND_API_KEY not configured";
+      console.warn(emailError);
     }
 
     // Add to Google Sheets
@@ -109,7 +131,7 @@ app.post("/make-server-f3bc3770/submit-lead", async (c) => {
           body: JSON.stringify({
             values: [
               [
-                timestamp || new Date().toISOString(),
+                submittedAt,
                 name,
                 email,
                 whatsapp,
@@ -136,13 +158,16 @@ app.post("/make-server-f3bc3770/submit-lead", async (c) => {
       success: true,
       message: "Lead submitted successfully",
       leadId,
+      emailSent,
+      emailError,
     });
   } catch (error) {
-    console.error("Error processing lead submission:", error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Error processing lead submission:", message);
     return c.json(
       {
         error: "Failed to process lead submission",
-        details: error.message,
+        details: message,
       },
       500,
     );

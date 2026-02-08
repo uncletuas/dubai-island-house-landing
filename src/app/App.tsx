@@ -23,9 +23,9 @@ export default function App() {
         headers: {
           'Content-Type': 'application/json',
           // Supabase Edge Functions require Authorization header when JWT verification is enabled.
-          // NOTE: Do not send an `apikey` header from the browser unless your
-          // function's CORS config explicitly allows it, otherwise the browser
-          // will block the request on preflight.
+          // NOTE: Avoid sending an `apikey` header from the browser.
+          // Supabase Edge Functions on supabase.co may not include `apikey` in
+          // Access-Control-Allow-Headers, which causes the browser preflight to fail.
           Authorization: `Bearer ${supabaseAnonKey}`,
         },
         body: JSON.stringify({

@@ -31,11 +31,14 @@ as JSON values with keys like `lead_...`.
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_ROLE_KEY`
    - optional: `RESEND_API_KEY` (email notifications)
+   - optional: `LEAD_NOTIFICATION_EMAIL` (defaults to `info@dubaiislandhouse.com`)
+   - optional: `RESEND_FROM_EMAIL` (defaults to `Dubai Island House <onboarding@resend.dev>`)
    - optional: `GOOGLE_API_KEY`, `GOOGLE_SHEET_ID` (Google Sheets append)
 4. Deploy:
    - `supabase functions deploy make-server-f3bc3770 --no-verify-jwt=false`
 
 ## Notes
 
-- The web app sends the request with `Authorization: Bearer <anon key>` and `apikey: <anon key>`.
+- The web app should send `Authorization: Bearer <anon key>`.
+- Do **not** send an `apikey` header from the browser unless your Edge Function preflight explicitly allows it.
 - If you disable JWT verification for the function, the Authorization header is not required.
