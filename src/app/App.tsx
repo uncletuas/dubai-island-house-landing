@@ -23,8 +23,10 @@ export default function App() {
         headers: {
           'Content-Type': 'application/json',
           // Supabase Edge Functions require Authorization header when JWT verification is enabled.
+          // NOTE: Do not send an `apikey` header from the browser unless your
+          // function's CORS config explicitly allows it, otherwise the browser
+          // will block the request on preflight.
           Authorization: `Bearer ${supabaseAnonKey}`,
-          apikey: supabaseAnonKey,
         },
         body: JSON.stringify({
           ...formData,
@@ -40,8 +42,8 @@ export default function App() {
           setFormData({ name: '', whatsapp: '', email: '' });
         }, 4000);
       } else {
-        const errorData = await response.json();
-        console.error('Form submission failed:', errorData);
+        const errorText = await response.text().catch(() => '');
+        console.error('Form submission failed:', errorText);
         alert('There was an issue submitting your request. Please email us directly at info@dubaiislandhouse.com');
       }
     } catch (error) {
