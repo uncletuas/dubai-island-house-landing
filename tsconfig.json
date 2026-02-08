@@ -9,8 +9,8 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "strict": true,
-    "types": ["./types/vercel-edge"]
+    "types": []
   },
-  "include": ["src", "api", "vite.config.ts", "types"],
-  "exclude": ["dist", "node_modules", "supabase/functions/server"]
+  "include": ["src", "vite.config.ts"],
+  "exclude": ["dist", "node_modules", "supabase/functions/server", "api", "types"]
 }

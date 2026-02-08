@@ -14,11 +14,9 @@
   The lead capture form posts to a Supabase Edge Function (`make-server-f3bc3770`).
   See `supabase/README.md` for details.
 
-  ## Downloads / Exports
+  ## Google Sheets
 
-  When deployed to Vercel, this repo provides Edge API endpoints:
-
-  - `GET /api/leads?token=...` → downloads leads from Supabase (`kv_store_f3bc3770`) as CSV
-  - `GET /api/sheets?token=...` → downloads a Google Sheet as CSV (requires `GOOGLE_*` env vars)
+  The Supabase Edge Function can append leads to a Google Sheet (recommended via a Google Service Account).
+  See `supabase/README.md`.
 
   
