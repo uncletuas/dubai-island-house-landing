@@ -13,7 +13,7 @@ app.use(
   "/*",
   cors({
     origin: "*",
-    allowHeaders: ["Content-Type", "Authorization", "apikey"],
+    allowHeaders: ["Content-Type", "Authorization", "apikey", "x-admin-token"],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
     maxAge: 600,
@@ -193,8 +193,9 @@ app.get("/export-leads.csv", async (c) => {
   const headerToken = authHeader.startsWith("Bearer ")
     ? authHeader.slice("Bearer ".length).trim()
     : "";
-  const queryToken = c.req.query("token") || "";
-  const providedToken = headerToken || queryToken;
+  const adminHeaderToken = (c.req.header("x-admin-token") || "").trim();
+  const queryToken = (c.req.query("token") || "").trim();
+  const providedToken = adminHeaderToken || queryToken || headerToken;
 
   if (!providedToken || providedToken !== requiredToken) {
     return c.text("Unauthorized", 401);
