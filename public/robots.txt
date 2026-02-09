@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Keep admin pages out of search results
+Disallow: /admin/
+
+Sitemap: https://dubaiislandhouse.com/sitemap.xml

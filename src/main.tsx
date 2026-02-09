@@ -7,6 +7,58 @@ import "./styles/index.css";
 
 const pathname = window.location.pathname;
 
+// Basic SEO for SPA routes (Google executes JS, so this helps indexing).
+// NOTE: index.html remains the baseline for non-JS crawlers.
+const setMeta = (opts: {
+  title: string;
+  description?: string;
+  canonical?: string;
+  robots?: string;
+}) => {
+  document.title = opts.title;
+
+  if (opts.description) {
+    const el = document.querySelector('meta[name="description"]');
+    if (el) el.setAttribute('content', opts.description);
+  }
+
+  if (opts.robots) {
+    const el = document.querySelector('meta[name="robots"]');
+    if (el) el.setAttribute('content', opts.robots);
+  }
+
+  if (opts.canonical) {
+    const el = document.querySelector('link[rel="canonical"]');
+    if (el) el.setAttribute('href', opts.canonical);
+  }
+};
+
+if (pathname === "/privacy-policy") {
+  setMeta({
+    title: "Privacy Policy | Dubai Island House",
+    description:
+      "Read how Dubai Island House collects, uses, and protects your information when you request property details.",
+    canonical: "https://dubaiislandhouse.com/privacy-policy",
+    robots: "index,follow",
+  });
+} else if (pathname === "/admin/export") {
+  // Admin-only page: do not index
+  setMeta({
+    title: "Admin Export | Dubai Island House",
+    canonical: "https://dubaiislandhouse.com/admin/export",
+    robots: "noindex,nofollow",
+  });
+} else {
+  setMeta({
+    title:
+      "Dubai Island House | Waterfront Villas & Luxury Island Living in Dubai",
+    description:
+      "Request full details for premium waterfront villas and luxury island living in Dubai. Get pricing, floor plans, and limited-availability offers.",
+    canonical: "https://dubaiislandhouse.com/",
+    robots: "index,follow",
+  });
+}
+
 // Minimal client-side routing (no react-router dependency).
 // Vercel is configured to serve index.html for all routes (see vercel.json).
 const Page =

@@ -14,6 +14,8 @@ import {
  * This token must match the `ADMIN_EXPORT_TOKEN` secret set on the Supabase Edge Function.
  */
 export default function AdminExport() {
+  // Reduce chance of accidental indexing if someone links it.
+  // (Routing also sets meta robots to noindex in main.tsx)
   const initialToken = useMemo(() => {
     try {
       return new URLSearchParams(window.location.search).get('token') || '';
