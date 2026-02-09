@@ -16,6 +16,10 @@ export const leadSubmitUrl =
   import.meta.env.VITE_LEAD_SUBMIT_URL ||
   `${supabaseUrl}/functions/v1/make-server-f3bc3770/submit-lead`;
 
+// Formspree (optional)
+// Set this to your Formspree form endpoint, e.g. https://formspree.io/f/abcdwxyz
+export const formspreeEndpoint = import.meta.env.VITE_FORMSPREE_ENDPOINT || "";
+
 // Export endpoint URL.
 // We derive it from leadSubmitUrl so it still works even if you override VITE_LEAD_SUBMIT_URL
 // to a different backend/project.

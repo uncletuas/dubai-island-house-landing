@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ImageWithFallback } from './components/figma/ImageWithFallback';
 import { CheckCircle2, MapPin, Sparkles, Shield, TrendingUp, Home, Clock } from 'lucide-react';
-import { leadSubmitUrl, supabaseAnonKey } from '../lib/supabaseEnv';
+import { formspreeEndpoint, leadSubmitUrl, supabaseAnonKey } from '../lib/supabaseEnv';
 
 export default function App() {
   const [formData, setFormData] = useState({
@@ -11,6 +11,33 @@ export default function App() {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isUsingFormspree = Boolean(formspreeEndpoint);
+
+  const redirectUrl = useMemo(() => {
+    // After Formspree submission, redirect back to the same page and show the success state.
+    try {
+      return `${window.location.origin}/?submitted=1#lead-form`;
+    } catch {
+      return '/?submitted=1#lead-form';
+    }
+  }, []);
+
+  useEffect(() => {
+    // If we were redirected back by Formspree, show the thank you state.
+    try {
+      const url = new URL(window.location.href);
+      const submitted = url.searchParams.get('submitted') === '1';
+      if (submitted) {
+        setIsSubmitted(true);
+        // Clean URL (remove submitted=1) without reloading.
+        url.searchParams.delete('submitted');
+        window.history.replaceState({}, '', url.pathname + url.search + url.hash);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -244,9 +271,28 @@ export default function App() {
               <p className="text-gray-700">Our team will contact you shortly.</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form
+              onSubmit={isUsingFormspree ? undefined : handleSubmit}
+              action={isUsingFormspree ? formspreeEndpoint : undefined}
+              method={isUsingFormspree ? 'POST' : undefined}
+              className="space-y-5"
+            >
+              {isUsingFormspree && (
+                <>
+                  {/* Redirect back to this page after successful submission */}
+                  <input type="hidden" name="_redirect" value={redirectUrl} />
+                  <input type="hidden" name="_next" value={redirectUrl} />
+                  <input type="hidden" name="source" value="dubaiislandhouse.com" />
+                  <input
+                    type="hidden"
+                    name="timestamp"
+                    value={new Date().toISOString()}
+                  />
+                </>
+              )}
               <input
                 type="text"
+                name="name"
                 placeholder="Full Name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -255,6 +301,7 @@ export default function App() {
               />
               <input
                 type="tel"
+                name="whatsapp"
                 placeholder="WhatsApp Number (with country code)"
                 value={formData.whatsapp}
                 onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
@@ -263,6 +310,7 @@ export default function App() {
               />
               <input
                 type="email"
+                name="email"
                 placeholder="Email Address"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -271,10 +319,10 @@ export default function App() {
               />
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={!isUsingFormspree && isSubmitting}
                 className="w-full bg-black hover:bg-[#D4AF37] text-white hover:text-black px-8 py-5 text-lg font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Submitting...' : 'Send Me Full Details'}
+                {!isUsingFormspree && isSubmitting ? 'Submitting...' : 'Send Me Full Details'}
               </button>
               <p className="text-xs text-gray-500 mt-4">
                 Your information is 100% confidential. No spam, ever.

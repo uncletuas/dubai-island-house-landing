@@ -14,6 +14,19 @@
   The lead capture form posts to a Supabase Edge Function (`make-server-f3bc3770`).
   See `supabase/README.md` for details.
 
+  ## Formspree (simple submissions inbox)
+
+  If you want to receive submissions inside Formspree (and get email notifications),
+  create a form on https://formspree.io and copy your endpoint URL.
+
+  Then set the Vercel (or local) environment variable:
+
+  - `VITE_FORMSPREE_ENDPOINT=https://formspree.io/f/<yourFormId>`
+
+  When `VITE_FORMSPREE_ENDPOINT` is set, the website form will submit directly
+  to Formspree and redirect back to the landing page showing the “Thank You”
+  message.
+
   ## Admin lead export (download as Excel)
 
   Visit:
