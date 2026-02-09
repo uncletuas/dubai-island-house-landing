@@ -15,3 +15,46 @@ export const supabaseAnonKey =
 export const leadSubmitUrl =
   import.meta.env.VITE_LEAD_SUBMIT_URL ||
   `${supabaseUrl}/functions/v1/make-server-f3bc3770/submit-lead`;
+
+// Export endpoint URL.
+// We derive it from leadSubmitUrl so it still works even if you override VITE_LEAD_SUBMIT_URL
+// to a different backend/project.
+export const leadExportUrl = (() => {
+  try {
+    const u = new URL(leadSubmitUrl);
+
+    // Build off the submit URL origin + function base path.
+    // Works even if the submit URL has a trailing slash or query params.
+    const normalizedPath = u.pathname.replace(/\/+$/, "");
+    const submitSuffix = "/submit-lead";
+
+    const base = normalizedPath.endsWith(submitSuffix)
+      ? normalizedPath.slice(0, -submitSuffix.length)
+      : normalizedPath.slice(0, normalizedPath.lastIndexOf("/"));
+
+    u.pathname = `${base}/export-leads.csv`;
+    // token is added at call site; keep URL clean
+    u.search = "";
+    return u.toString();
+  } catch {
+    return `${supabaseUrl}/functions/v1/make-server-f3bc3770/export-leads.csv`;
+  }
+})();
+
+export const leadHealthUrl = (() => {
+  try {
+    const u = new URL(leadSubmitUrl);
+    const normalizedPath = u.pathname.replace(/\/+$/, "");
+    const submitSuffix = "/submit-lead";
+
+    const base = normalizedPath.endsWith(submitSuffix)
+      ? normalizedPath.slice(0, -submitSuffix.length)
+      : normalizedPath.slice(0, normalizedPath.lastIndexOf("/"));
+
+    u.pathname = `${base}/health`;
+    u.search = "";
+    return u.toString();
+  } catch {
+    return `${supabaseUrl}/functions/v1/make-server-f3bc3770/health`;
+  }
+})();

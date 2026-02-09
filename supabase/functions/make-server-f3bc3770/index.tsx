@@ -174,4 +174,78 @@ app.post("/submit-lead", async (c) => {
   }
 });
 
+// Export leads as CSV (Excel-readable)
+//
+// Security:
+// - Configure `ADMIN_EXPORT_TOKEN` in Supabase Edge Function secrets.
+// - Then either:
+//    A) call with query:  /export-leads.csv?token=...   (easy for a "special link")
+//    B) call with header: Authorization: Bearer ...
+//
+// If `ADMIN_EXPORT_TOKEN` is NOT set, this endpoint is disabled.
+app.get("/export-leads.csv", async (c) => {
+  const requiredToken = Deno.env.get("ADMIN_EXPORT_TOKEN");
+  if (!requiredToken) {
+    return c.text("Export disabled: ADMIN_EXPORT_TOKEN not configured", 403);
+  }
+
+  const authHeader = c.req.header("Authorization") || "";
+  const headerToken = authHeader.startsWith("Bearer ")
+    ? authHeader.slice("Bearer ".length).trim()
+    : "";
+  const queryToken = c.req.query("token") || "";
+  const providedToken = headerToken || queryToken;
+
+  if (!providedToken || providedToken !== requiredToken) {
+    return c.text("Unauthorized", 401);
+  }
+
+  // Fetch all lead values
+  const leads = await kv.getByPrefix("lead_");
+
+  // Sort newest first (best-effort)
+  const sorted = [...leads].sort((a, b) => {
+    const ta = Date.parse(a?.timestamp ?? "") || 0;
+    const tb = Date.parse(b?.timestamp ?? "") || 0;
+    return tb - ta;
+  });
+
+  // CSV helpers
+  const csvEscape = (val: unknown) => {
+    const s = val == null ? "" : String(val);
+    // Escape quotes by doubling them, wrap in quotes to be safe with commas/newlines
+    return `"${s.replaceAll('"', '""')}"`;
+  };
+
+  const header = [
+    "submitted_at",
+    "name",
+    "email",
+    "whatsapp",
+    "source",
+  ];
+
+  const rows = sorted.map((l) => [
+    l?.timestamp ?? "",
+    l?.name ?? "",
+    l?.email ?? "",
+    l?.whatsapp ?? "",
+    l?.source ?? "dubaiislandhouse.com",
+  ]);
+
+  const csv =
+    [header.map(csvEscape).join(","), ...rows.map((r) => r.map(csvEscape).join(","))]
+      .join("\n") + "\n";
+
+  const date = new Date().toISOString().slice(0, 10);
+  c.header("Content-Type", "text/csv; charset=utf-8");
+  c.header(
+    "Content-Disposition",
+    `attachment; filename=leads-${date}.csv`,
+  );
+  c.header("Cache-Control", "no-store");
+
+  return c.body(csv);
+});
+
 Deno.serve(app.fetch);

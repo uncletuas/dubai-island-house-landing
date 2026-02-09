@@ -314,6 +314,14 @@ export default function App() {
           <p className="text-gray-600 text-sm">
             © 2026 DubaiIslandHouse.com · Premium Waterfront Living
           </p>
+          <div className="mt-2">
+            <a
+              href="/privacy-policy"
+              className="text-xs text-gray-500 hover:text-black underline underline-offset-4"
+            >
+              Privacy Policy
+            </a>
+          </div>
         </div>
       </footer>
     </div>
