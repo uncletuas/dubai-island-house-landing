@@ -250,16 +250,17 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-[#031a2a]">
-        <div className="mx-auto max-w-[1170px]">
+      <section className="relative min-h-screen flex items-center overflow-hidden">
+        <div className="absolute inset-0">
           <ImageWithFallback
             src={heroImageSrc}
             alt="Dubai Islands waterfront aerial view"
-            className="w-full h-auto block"
+            className="w-full h-full object-cover"
           />
+          <div className="absolute inset-0 bg-black/55" />
         </div>
 
-        <div className="relative z-10 w-full px-4 py-16 md:py-20 bg-gradient-to-b from-[#031a2a] to-[#062640]">
+        <div className="relative z-10 w-full px-4 py-16">
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 text-white/90 px-4 py-2 text-sm mb-6">
