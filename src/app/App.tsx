@@ -1,7 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ImageWithFallback } from './components/figma/ImageWithFallback';
-import { CheckCircle2, MapPin, Sparkles, Shield, TrendingUp, Home, Clock } from 'lucide-react';
+import {
+  CheckCircle2,
+  Waves,
+  TrendingUp,
+  Building2,
+  CalendarDays,
+  Quote,
+  ShieldCheck,
+  Star,
+} from 'lucide-react';
 import { formspreeEndpoint, leadSubmitUrl, supabaseAnonKey } from '../lib/supabaseEnv';
+
+type LeadFormProps = {
+  id?: string;
+  title?: string;
+  subtitle?: string;
+  variant?: 'card' | 'plain';
+};
 
 export default function App() {
   const [formData, setFormData] = useState({
@@ -85,88 +101,225 @@ export default function App() {
     document.getElementById('lead-form')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const LeadForm = ({
+    id,
+    title = 'Get Full Project Details',
+    subtitle = 'Receive pricing, floor plans, and availability — shared privately.',
+    variant = 'card',
+  }: LeadFormProps) => {
+    const containerClass =
+      variant === 'card'
+        ? 'bg-white/95 backdrop-blur border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.25)] rounded-sm'
+        : 'bg-white border border-gray-200 rounded-sm';
+
+    return (
+      <div id={id} className={containerClass}>
+        <div className={variant === 'card' ? 'p-8 md:p-10' : 'p-8 md:p-10'}>
+          <h2 className={variant === 'card' ? 'text-2xl md:text-3xl mb-2' : 'text-3xl md:text-4xl mb-3'}>
+            {title}
+          </h2>
+          <p className={variant === 'card' ? 'text-gray-700 mb-6' : 'text-gray-600 mb-8'}>{subtitle}</p>
+
+          {isSubmitted ? (
+            <div className="bg-green-50 border-2 border-green-500 p-8 rounded-sm text-center">
+              <CheckCircle2 className="w-14 h-14 mx-auto mb-4 text-green-600" />
+              <h3 className="text-2xl mb-2">Thank You!</h3>
+              <p className="text-gray-700">Our team will contact you shortly.</p>
+            </div>
+          ) : (
+            <form
+              onSubmit={isUsingFormspree ? undefined : handleSubmit}
+              action={isUsingFormspree ? formspreeEndpoint : undefined}
+              method={isUsingFormspree ? 'POST' : undefined}
+              className="space-y-4"
+            >
+              {isUsingFormspree && (
+                <>
+                  {/* Redirect back to this page after successful submission */}
+                  <input type="hidden" name="_redirect" value={redirectUrl} />
+                  <input type="hidden" name="_next" value={redirectUrl} />
+                  <input type="hidden" name="source" value="dubaiislandhouse.com" />
+                  <input type="hidden" name="timestamp" value={new Date().toISOString()} />
+                </>
+              )}
+
+              <label className="sr-only" htmlFor={`${id ?? 'lead-form'}-name`}>
+                Full Name
+              </label>
+              <input
+                id={`${id ?? 'lead-form'}-name`}
+                type="text"
+                name="name"
+                placeholder="Full Name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+                className="w-full px-5 py-3.5 border border-gray-300 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 transition-all"
+              />
+
+              <label className="sr-only" htmlFor={`${id ?? 'lead-form'}-email`}>
+                Email
+              </label>
+              <input
+                id={`${id ?? 'lead-form'}-email`}
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+                className="w-full px-5 py-3.5 border border-gray-300 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 transition-all"
+              />
+
+              <label className="sr-only" htmlFor={`${id ?? 'lead-form'}-whatsapp`}>
+                WhatsApp / Phone
+              </label>
+              <input
+                id={`${id ?? 'lead-form'}-whatsapp`}
+                type="tel"
+                name="whatsapp"
+                placeholder="WhatsApp / Phone"
+                value={formData.whatsapp}
+                onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                required
+                className="w-full px-5 py-3.5 border border-gray-300 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 transition-all"
+              />
+
+              <button
+                type="submit"
+                disabled={!isUsingFormspree && isSubmitting}
+                className="w-full bg-[#D4AF37] hover:bg-[#C5A028] text-black px-8 py-4 text-lg font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {!isUsingFormspree && isSubmitting ? 'Submitting…' : 'Get Full Project Details'}
+              </button>
+
+              <p className="text-xs text-gray-600 leading-relaxed">
+                Your details are kept private and solely used to share project information.
+              </p>
+            </form>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // NOTE: These image paths are intentionally local (fast + controllable).
+  // Replace them with your Dubai Islands-specific hero/gallery assets:
+  //   public/images/dubai-islands/hero-aerial.jpg
+  //   public/images/dubai-islands/gallery-01.jpg ... gallery-06.jpg
+  // If files are missing, ImageWithFallback will render a placeholder.
+  const heroImageSrc = '/images/dubai-islands/hero-aerial.svg';
+  const gallery = [
+    {
+      src: '/images/dubai-islands/gallery-01-aerial-panorama.svg',
+      alt: 'Dubai Islands aerial panorama',
+      caption: 'Aerial Dubai Islands panorama',
+    },
+    {
+      src: '/images/dubai-islands/gallery-02-marina-waterfront.svg',
+      alt: 'Marina waterfront at Dubai Islands',
+      caption: 'Marina waterfront',
+    },
+    {
+      src: '/images/dubai-islands/gallery-03-premium-interiors.svg',
+      alt: 'Premium interiors',
+      caption: 'Premium interiors',
+    },
+    {
+      src: '/images/dubai-islands/gallery-04-balcony-water-views.svg',
+      alt: 'Balcony with water views',
+      caption: 'Balcony water views',
+    },
+    {
+      src: '/images/dubai-islands/gallery-05-beach-lifestyle.svg',
+      alt: 'Beach lifestyle',
+      caption: 'Beach & leisure lifestyle',
+    },
+    {
+      src: '/images/dubai-islands/gallery-06-amenities.svg',
+      alt: 'Lifestyle amenities',
+      caption: 'Resort-style amenities',
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <ImageWithFallback
-            src="https://images.unsplash.com/photo-1728970381470-21d81c2b05b1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBEdWJhaSUyMHdhdGVyZnJvbnQlMjBza3lsaW5lfGVufDF8fHx8MTc3MDM1ODA4OHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-            alt="Luxury Dubai Waterfront"
+            src={heroImageSrc}
+            alt="Dubai Islands waterfront aerial view"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-black/40"></div>
+          <div className="absolute inset-0 bg-black/55" />
         </div>
-        
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-7xl text-white mb-6 tracking-tight">
-            Your Waterfront Villa
-            <span className="block text-[#D4AF37]">Awaits in Dubai</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-2xl mx-auto">
-            Exclusive island living with panoramic views. Limited units available.
-          </p>
-          <button
-            onClick={scrollToForm}
-            className="bg-[#D4AF37] hover:bg-[#C5A028] text-black px-12 py-5 text-lg font-medium transition-all duration-300 hover:scale-105"
-          >
-            Get Full Project Details
-          </button>
+
+        <div className="relative z-10 w-full px-4 py-16">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            <div className="lg:col-span-7">
+              <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 text-white/90 px-4 py-2 text-sm mb-6">
+                <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
+                <span>Dubai Islands • Waterfront address • Limited allocation</span>
+              </div>
+
+              <h1 className="text-4xl md:text-6xl text-white mb-5 tracking-tight leading-[1.05]">
+                Dubai Islands Waterfront Properties —{' '}
+                <span className="text-[#D4AF37]">Limited Availability</span>
+              </h1>
+              <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl">
+                Premium units in Dubai’s most anticipated coastal address — investment and ownership opportunities
+                available.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={scrollToForm}
+                  className="bg-[#D4AF37] hover:bg-[#C5A028] text-black px-8 py-4 text-lg font-semibold transition-all duration-300"
+                >
+                  Get Full Project Details
+                </button>
+                <div className="text-white/80 text-sm leading-relaxed sm:max-w-xs">
+                  Submit your details to receive the latest brochure, pricing, and availability.
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-5">
+              <LeadForm
+                id="lead-form"
+                variant="card"
+                title="Request Full Details"
+                subtitle="Get the brochure, pricing, and unit availability." 
+              />
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Benefits Section */}
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-6">
-            <div className="text-center">
-              <MapPin className="w-10 h-10 mx-auto mb-4 text-[#D4AF37]" strokeWidth={1.5} />
-              <h3 className="text-lg mb-2">Prime Island Location</h3>
-              <p className="text-gray-600 text-sm">Direct beach access & marina views</p>
-            </div>
-            <div className="text-center">
-              <Sparkles className="w-10 h-10 mx-auto mb-4 text-[#D4AF37]" strokeWidth={1.5} />
-              <h3 className="text-lg mb-2">Luxury Finishes</h3>
-              <p className="text-gray-600 text-sm">Italian marble & premium fixtures</p>
-            </div>
-            <div className="text-center">
-              <Shield className="w-10 h-10 mx-auto mb-4 text-[#D4AF37]" strokeWidth={1.5} />
-              <h3 className="text-lg mb-2">Flexible Payment</h3>
-              <p className="text-gray-600 text-sm">Attractive plans for investors</p>
-            </div>
-            <div className="text-center">
-              <CheckCircle2 className="w-10 h-10 mx-auto mb-4 text-[#D4AF37]" strokeWidth={1.5} />
-              <h3 className="text-lg mb-2">Ready Q4 2026</h3>
-              <p className="text-gray-600 text-sm">Move-in date guaranteed</p>
-            </div>
-          </div>
-        </div>
-      </section>
+          <h2 className="text-3xl md:text-4xl text-center mb-12">
+            Why <span className="text-[#D4AF37]">Dubai Islands</span>?
+          </h2>
 
-      {/* Gallery Section */}
-      <section className="py-20 px-4 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="relative h-80 md:h-96 overflow-hidden">
-              <ImageWithFallback
-                src="https://images.unsplash.com/photo-1682685098665-01419745162e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcmVtaXVtJTIwd2F0ZXJmcm9udCUyMGFwYXJ0bWVudCUyMGludGVyaW9yfGVufDF8fHx8MTc3MDM1ODA4OHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                alt="Premium Interior"
-                className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
-              />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="border border-gray-200 p-6 text-center">
+              <Waves className="w-10 h-10 mx-auto mb-4 text-[#D4AF37]" strokeWidth={1.5} />
+              <p className="text-gray-900 font-medium">Rare waterfront property</p>
             </div>
-            <div className="relative h-80 md:h-96 overflow-hidden">
-              <ImageWithFallback
-                src="https://images.unsplash.com/photo-1650838693474-756df587cc0e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBwZW50aG91c2UlMjBiYWxjb255JTIwdmlld3xlbnwxfHx8fDE3NzAzNTgwODl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                alt="Balcony View"
-                className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
-              />
+            <div className="border border-gray-200 p-6 text-center">
+              <TrendingUp className="w-10 h-10 mx-auto mb-4 text-[#D4AF37]" strokeWidth={1.5} />
+              <p className="text-gray-900 font-medium">Strong investment demand</p>
             </div>
-            <div className="relative h-80 md:h-96 overflow-hidden">
-              <ImageWithFallback
-                src="https://images.unsplash.com/photo-1757264119016-7e6b568b810d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBsdXh1cnklMjB2aWxsYSUyMHBvb2x8ZW58MXx8fHwxNzcwMjcyMzExfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                alt="Pool & Villa"
-                className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
-              />
+            <div className="border border-gray-200 p-6 text-center">
+              <Building2 className="w-10 h-10 mx-auto mb-4 text-[#D4AF37]" strokeWidth={1.5} />
+              <p className="text-gray-900 font-medium">Prime Dubai location</p>
+            </div>
+            <div className="border border-gray-200 p-6 text-center">
+              <CalendarDays className="w-10 h-10 mx-auto mb-4 text-[#D4AF37]" strokeWidth={1.5} />
+              <p className="text-gray-900 font-medium">Flexible payment options</p>
             </div>
           </div>
         </div>
@@ -176,200 +329,201 @@ export default function App() {
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl text-center mb-12">
-            The <span className="text-[#D4AF37]">Opportunity</span>
+            Opportunity <span className="text-[#D4AF37]">Overview</span>
           </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            {/* Investment Column */}
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <TrendingUp className="w-8 h-8 text-[#D4AF37]" strokeWidth={1.5} />
-                <h3 className="text-xl font-medium">Investment Advantages</h3>
-              </div>
-              <ul className="space-y-3 text-gray-700">
-                <li className="flex items-start gap-2">
-                  <span className="text-[#D4AF37] mt-1">•</span>
-                  <span>Prime waterfront location with high appreciation potential</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#D4AF37] mt-1">•</span>
-                  <span>Strong market demand in Dubai's premium real estate sector</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#D4AF37] mt-1">•</span>
-                  <span>Long-term value growth in exclusive island development</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#D4AF37] mt-1">•</span>
-                  <span>Flexible payment plans tailored for investors</span>
-                </li>
-              </ul>
-            </div>
 
-            {/* Residential Column */}
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <Home className="w-8 h-8 text-[#D4AF37]" strokeWidth={1.5} />
-                <h3 className="text-xl font-medium">Residential Benefits</h3>
-              </div>
-              <ul className="space-y-3 text-gray-700">
-                <li className="flex items-start gap-2">
-                  <span className="text-[#D4AF37] mt-1">•</span>
-                  <span>Premium finishes with Italian marble and designer fixtures</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#D4AF37] mt-1">•</span>
-                  <span>Complete privacy in exclusive gated community</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#D4AF37] mt-1">•</span>
-                  <span>Unmatched comfort with smart home technology</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#D4AF37] mt-1">•</span>
-                  <span>Quality surroundings with world-class amenities</span>
-                </li>
-              </ul>
+          <p className="text-gray-700 text-lg leading-relaxed text-center max-w-3xl mx-auto">
+            Dubai Islands offers one of the rarest waterfront real estate opportunities in Dubai, combining modern
+            design, future growth potential and lifestyle appeal. Whether you’re securing long-term value or a luxury
+            residence, limited units make early access essential.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+            <div className="border border-gray-200 p-7">
+              <h3 className="text-xl font-semibold mb-2">For Investors</h3>
+              <p className="text-gray-700">
+                High-demand coastal inventory, strong upside potential, and priority allocation for early requests.
+              </p>
+            </div>
+            <div className="border border-gray-200 p-7">
+              <h3 className="text-xl font-semibold mb-2">For End-Users</h3>
+              <p className="text-gray-700">
+                A premium waterfront lifestyle — beach, marina, and modern residences designed for everyday living.
+              </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Gallery Section */}
+      <section className="py-20 px-4 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-end justify-between gap-6 mb-10">
+            <h2 className="text-3xl md:text-4xl">
+              Dubai Islands <span className="text-[#D4AF37]">Gallery</span>
+            </h2>
+            <button
+              onClick={scrollToForm}
+              className="hidden md:inline-flex bg-[#D4AF37] hover:bg-[#C5A028] text-black px-6 py-3 font-semibold transition"
+            >
+              Get Full Project Details
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {gallery.map((img) => (
+              <figure key={img.src} className="bg-white border border-gray-200 overflow-hidden">
+                <div className="relative h-64 overflow-hidden">
+                  <ImageWithFallback
+                    src={img.src}
+                    alt={img.alt}
+                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
+                    loading="lazy"
+                  />
+                </div>
+                <figcaption className="p-4 text-sm text-gray-700">{img.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trust & Social Proof */}
+      <section className="py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl md:text-4xl text-center mb-12">
+            Trust & <span className="text-[#D4AF37]">Social Proof</span>
+          </h2>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="border border-gray-200 p-7">
+              <div className="flex items-center justify-between mb-4">
+                <Quote className="w-8 h-8 text-[#D4AF37]" strokeWidth={1.5} />
+                <div className="flex gap-1" aria-label="5 star rating">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="w-4 h-4 text-[#D4AF37]" fill="#D4AF37" strokeWidth={1.5} />
+                  ))}
+                </div>
+              </div>
+              <p className="text-gray-900 text-lg leading-relaxed mb-4">
+                “Professional support and real pricing info — great experience!”
+              </p>
+              <p className="text-sm text-gray-600">— A.T., UK investor</p>
+            </div>
+            <div className="border border-gray-200 p-7">
+              <div className="flex items-center justify-between mb-4">
+                <Quote className="w-8 h-8 text-[#D4AF37]" strokeWidth={1.5} />
+                <div className="flex gap-1" aria-label="5 star rating">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="w-4 h-4 text-[#D4AF37]" fill="#D4AF37" strokeWidth={1.5} />
+                  ))}
+                </div>
+              </div>
+              <p className="text-gray-900 text-lg leading-relaxed mb-4">
+                “Fast response and clear unit availability. Helped us shortlist quickly.”
+              </p>
+              <p className="text-sm text-gray-600">— M.K., GCC buyer</p>
+            </div>
+            <div className="border border-gray-200 p-7">
+              <div className="flex items-center justify-between mb-4">
+                <Quote className="w-8 h-8 text-[#D4AF37]" strokeWidth={1.5} />
+                <div className="flex gap-1" aria-label="5 star rating">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="w-4 h-4 text-[#D4AF37]" fill="#D4AF37" strokeWidth={1.5} />
+                  ))}
+                </div>
+              </div>
+              <p className="text-gray-900 text-lg leading-relaxed mb-4">
+                “Transparent process and helpful guidance from start to finish.”
+              </p>
+              <p className="text-sm text-gray-600">— S.R., overseas buyer</p>
+            </div>
+          </div>
+
+          <p className="text-center text-sm text-gray-600 mt-10">
+            We share pricing and availability privately after request. No spam.
+          </p>
         </div>
       </section>
 
       {/* Urgency Section */}
       <section className="py-16 px-4 bg-gray-50 border-t border-b border-gray-200">
         <div className="max-w-3xl mx-auto text-center">
-          <Clock className="w-12 h-12 mx-auto mb-4 text-[#D4AF37]" strokeWidth={1.5} />
           <h2 className="text-2xl md:text-3xl mb-4">
-            <span className="text-[#D4AF37]">Limited Time Offer</span> – Don't Miss Out
+            <span className="text-[#D4AF37]">Limited Waterfront Inventory</span>
           </h2>
           <p className="text-gray-700 text-lg mb-6">
-            Only <strong>12 waterfront units</strong> remain in this exclusive launch phase. Early reservations receive priority selection and special pricing.
+            Units are limited due to strong demand — secure priority access before prices rise.
           </p>
           <button
             onClick={scrollToForm}
-            className="bg-black hover:bg-[#D4AF37] text-white hover:text-black px-10 py-4 text-lg font-medium transition-all duration-300"
+            className="bg-[#D4AF37] hover:bg-[#C5A028] text-black px-10 py-4 text-lg font-semibold transition-all duration-300"
           >
-            Secure Your Priority Access
+            Get Full Project Details
           </button>
         </div>
       </section>
 
-      {/* Lead Capture Form */}
-      <section id="lead-form" className="py-24 px-4">
-        <div className="max-w-lg mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl mb-4">
-            Request <span className="text-[#D4AF37]">Full Details</span>
-          </h2>
-          <p className="text-gray-600 mb-10">
-            Receive floor plans, pricing, and exclusive offers within 24 hours
-          </p>
+      {/* Bottom Lead Form (repeat) */}
+      <section className="py-24 px-4">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          <div className="lg:col-span-6">
+            <h2 className="text-3xl md:text-4xl mb-4">
+              Request full details before availability tightens
+            </h2>
+            <p className="text-gray-700 text-lg mb-6">
+              Get the latest brochure, pricing, floor plans, and unit availability. Same-day response where possible.
+            </p>
+            <ul className="space-y-3 text-gray-700">
+              <li className="flex items-start gap-2">
+                <span className="text-[#D4AF37] mt-1">•</span>
+                <span>Updated inventory & payment options</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#D4AF37] mt-1">•</span>
+                <span>Best available views (marina / beach / skyline)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#D4AF37] mt-1">•</span>
+                <span>Priority allocation for early enquiries</span>
+              </li>
+            </ul>
+          </div>
 
-          {isSubmitted ? (
-            <div className="bg-green-50 border-2 border-green-500 p-8 rounded-sm">
-              <CheckCircle2 className="w-16 h-16 mx-auto mb-4 text-green-600" />
-              <h3 className="text-2xl mb-2">Thank You!</h3>
-              <p className="text-gray-700">Our team will contact you shortly.</p>
-            </div>
-          ) : (
-            <form
-              onSubmit={isUsingFormspree ? undefined : handleSubmit}
-              action={isUsingFormspree ? formspreeEndpoint : undefined}
-              method={isUsingFormspree ? 'POST' : undefined}
-              className="space-y-5"
-            >
-              {isUsingFormspree && (
-                <>
-                  {/* Redirect back to this page after successful submission */}
-                  <input type="hidden" name="_redirect" value={redirectUrl} />
-                  <input type="hidden" name="_next" value={redirectUrl} />
-                  <input type="hidden" name="source" value="dubaiislandhouse.com" />
-                  <input
-                    type="hidden"
-                    name="timestamp"
-                    value={new Date().toISOString()}
-                  />
-                </>
-              )}
-              <input
-                type="text"
-                name="name"
-                placeholder="Full Name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-                className="w-full px-6 py-4 border border-gray-300 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 transition-all"
-              />
-              <input
-                type="tel"
-                name="whatsapp"
-                placeholder="WhatsApp Number (with country code)"
-                value={formData.whatsapp}
-                onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
-                required
-                className="w-full px-6 py-4 border border-gray-300 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 transition-all"
-              />
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-                className="w-full px-6 py-4 border border-gray-300 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 transition-all"
-              />
-              <button
-                type="submit"
-                disabled={!isUsingFormspree && isSubmitting}
-                className="w-full bg-black hover:bg-[#D4AF37] text-white hover:text-black px-8 py-5 text-lg font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {!isUsingFormspree && isSubmitting ? 'Submitting...' : 'Send Me Full Details'}
-              </button>
-              <p className="text-xs text-gray-500 mt-4">
-                Your information is 100% confidential. No spam, ever.
-              </p>
-              <p className="text-xs text-gray-600 mt-3">
-                Or email us directly at{' '}
-                <a href="mailto:info@dubaiislandhouse.com" className="text-[#D4AF37] hover:underline">
-                  info@dubaiislandhouse.com
-                </a>
-              </p>
-            </form>
-          )}
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-16 px-4 bg-black text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl mb-4">
-            Limited Availability. Act Now.
-          </h2>
-          <p className="text-white/80 mb-8 text-lg">
-            Only 12 waterfront units remaining in this exclusive launch
-          </p>
-          <button
-            onClick={scrollToForm}
-            className="bg-[#D4AF37] hover:bg-white text-black px-12 py-5 text-lg font-medium transition-all duration-300 hover:scale-105"
-          >
-            Reserve Your Unit Today
-          </button>
+          <div className="lg:col-span-6">
+            <LeadForm
+              id="lead-form-bottom"
+              variant="plain"
+              title="Get Full Project Details"
+              subtitle="Your details are kept private and used only to share project information." 
+            />
+          </div>
         </div>
       </section>
 
       {/* Minimal Footer */}
       <footer className="py-8 px-4 bg-white border-t border-gray-200">
         <div className="max-w-6xl mx-auto text-center">
-          <p className="text-gray-600 text-sm">
-            © 2026 DubaiIslandHouse.com · Premium Waterfront Living
-          </p>
-          <div className="mt-2">
-            <a
-              href="/privacy-policy"
-              className="text-xs text-gray-500 hover:text-black underline underline-offset-4"
-            >
-              Privacy Policy
-            </a>
+          <p className="text-gray-800 font-medium">Contact</p>
+          <div className="mt-2 space-y-2 text-sm">
+            <div>
+              <a href="mailto:info@dubaiislandhouse.com" className="text-gray-700 hover:underline">
+                info@dubaiislandhouse.com
+              </a>
+            </div>
+            <div>
+              <a
+                href="https://wa.me/971000000000?text=Please%20share%20Dubai%20Islands%20project%20details"
+                target="_blank"
+                rel="noreferrer"
+                className="text-gray-700 hover:underline"
+              >
+                WhatsApp: Message us for details
+              </a>
+            </div>
           </div>
+
+          <p className="text-gray-500 text-xs mt-6">© 2026 DubaiIslandHouse.com</p>
         </div>
       </footer>
     </div>

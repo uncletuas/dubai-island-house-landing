@@ -50,10 +50,9 @@ if (pathname === "/privacy-policy") {
   });
 } else {
   setMeta({
-    title:
-      "Dubai Island House | Waterfront Villas & Luxury Island Living in Dubai",
+    title: "Dubai Islands Waterfront Properties — Limited Availability",
     description:
-      "Request full details for premium waterfront villas and luxury island living in Dubai. Get pricing, floor plans, and limited-availability offers.",
+      "Premium units in Dubai’s most anticipated coastal address — investment and ownership opportunities available. Request full project details.",
     canonical: "https://dubaiislandhouse.com/",
     robots: "index,follow",
   });
