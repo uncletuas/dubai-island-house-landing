@@ -1,0 +1,82 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1a2a" />
+      <stop offset="0.45" stop-color="#17334b" />
+      <stop offset="1" stop-color="#0e3f53" />
+    </linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c4a5b" />
+      <stop offset="0.55" stop-color="#0f6470" />
+      <stop offset="1" stop-color="#0b3b4c" />
+    </linearGradient>
+    <linearGradient id="sand" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d6c3a1" />
+      <stop offset="1" stop-color="#c6b089" />
+    </linearGradient>
+    <linearGradient id="city" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e7e1d6" />
+      <stop offset="1" stop-color="#c9c0b1" />
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#cde6f5" stop-opacity="0.7" />
+      <stop offset="1" stop-color="#9fc4db" stop-opacity="0.35" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#sky)" />
+  <rect y="320" width="1600" height="580" fill="url(#sea)" />
+
+  <rect y="290" width="1600" height="120" fill="#122a3d" opacity="0.45" />
+
+  <path
+    d="M140 520C340 450 560 430 760 470C920 500 1040 560 1180 560C1330 560 1480 520 1600 480V900H0V610C40 590 80 550 140 520Z"
+    fill="url(#sand)"
+  />
+  <path
+    d="M180 560C320 520 470 520 650 565C820 605 940 650 1120 640C1260 630 1430 580 1600 530V900H0V650C60 630 110 590 180 560Z"
+    fill="#bfa985"
+    opacity="0.7"
+  />
+
+  <path
+    d="M1010 420C1120 380 1250 370 1390 410C1490 440 1570 470 1600 490V560C1560 540 1470 510 1380 500C1240 485 1120 505 1010 540C920 570 840 590 760 580C650 560 560 510 480 470C400 430 300 400 200 410C120 420 50 450 0 470V410C70 390 150 370 250 360C370 350 470 390 560 430C640 470 720 515 820 530C900 540 960 500 1010 420Z"
+    fill="#0f5567"
+    opacity="0.5"
+  />
+
+  <g opacity="0.85">
+    <rect x="260" y="430" width="40" height="120" fill="url(#city)" />
+    <rect x="315" y="400" width="55" height="150" fill="url(#city)" />
+    <rect x="385" y="445" width="38" height="105" fill="url(#city)" />
+    <rect x="435" y="410" width="60" height="140" fill="url(#city)" />
+    <rect x="520" y="440" width="45" height="110" fill="url(#city)" />
+    <rect x="585" y="395" width="70" height="155" fill="url(#city)" />
+    <rect x="670" y="430" width="48" height="120" fill="url(#city)" />
+    <rect x="735" y="410" width="65" height="140" fill="url(#city)" />
+    <rect x="820" y="445" width="40" height="105" fill="url(#city)" />
+    <rect x="870" y="420" width="55" height="130" fill="url(#city)" />
+  </g>
+
+  <g opacity="0.55">
+    <rect x="300" y="440" width="120" height="90" fill="url(#glass)" />
+    <rect x="540" y="455" width="150" height="80" fill="url(#glass)" />
+    <rect x="780" y="460" width="140" height="75" fill="url(#glass)" />
+  </g>
+
+  <g opacity="0.7">
+    <rect x="1040" y="520" width="190" height="18" fill="#0c3e4c" />
+    <rect x="1070" y="542" width="150" height="12" fill="#0c3e4c" />
+    <rect x="1100" y="558" width="110" height="9" fill="#0c3e4c" />
+    <circle cx="1130" cy="520" r="6" fill="#d9e7ef" />
+    <circle cx="1180" cy="535" r="5" fill="#d9e7ef" />
+    <circle cx="1215" cy="547" r="4" fill="#d9e7ef" />
+  </g>
+
+  <path d="M280 700C360 680 430 670 520 675" stroke="#dfeef5" stroke-width="2" opacity="0.4" />
+  <path d="M820 735C950 700 1070 690 1200 700" stroke="#cfe5ee" stroke-width="2" opacity="0.35" />
+  <path d="M1150 640C1220 610 1300 590 1390 590" stroke="#cfe5ee" stroke-width="2" opacity="0.35" />
+
+  <circle cx="1350" cy="170" r="80" fill="#e3b872" opacity="0.22" />
+  <circle cx="1350" cy="170" r="140" fill="#e3b872" opacity="0.08" />
+</svg>

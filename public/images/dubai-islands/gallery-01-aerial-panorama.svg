@@ -1,0 +1,50 @@
+<svg width="1400" height="900" viewBox="0 0 1400 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sky01" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1a2a" />
+      <stop offset="0.5" stop-color="#193a54" />
+      <stop offset="1" stop-color="#0e4a5d" />
+    </linearGradient>
+    <linearGradient id="sea01" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b5a69" />
+      <stop offset="0.55" stop-color="#0f7380" />
+      <stop offset="1" stop-color="#084051" />
+    </linearGradient>
+    <linearGradient id="sand01" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d9c6a3" />
+      <stop offset="1" stop-color="#c4ae86" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1400" height="900" fill="url(#sky01)" />
+  <rect y="320" width="1400" height="580" fill="url(#sea01)" />
+
+  <path
+    d="M0 570C120 520 260 500 410 520C560 540 690 600 860 610C1040 620 1200 560 1400 500V900H0V570Z"
+    fill="url(#sand01)"
+  />
+  <path
+    d="M0 640C140 620 300 630 470 680C630 720 800 760 990 730C1160 705 1280 640 1400 600V900H0V640Z"
+    fill="#bfa77f"
+    opacity="0.75"
+  />
+
+  <g opacity="0.8">
+    <rect x="140" y="470" width="38" height="110" fill="#e2dbce" />
+    <rect x="190" y="440" width="55" height="140" fill="#e2dbce" />
+    <rect x="260" y="480" width="42" height="100" fill="#e2dbce" />
+    <rect x="320" y="450" width="60" height="130" fill="#e2dbce" />
+    <rect x="395" y="485" width="40" height="95" fill="#e2dbce" />
+    <rect x="450" y="455" width="58" height="125" fill="#e2dbce" />
+  </g>
+
+  <g opacity="0.6">
+    <rect x="600" y="470" width="120" height="90" fill="#a8c7d8" />
+    <rect x="760" y="485" width="150" height="80" fill="#a8c7d8" />
+    <rect x="980" y="490" width="140" height="75" fill="#a8c7d8" />
+  </g>
+
+  <path d="M200 720C300 700 420 690 520 700" stroke="#dfeef5" stroke-width="2" opacity="0.35" />
+  <path d="M720 740C860 700 1020 690 1170 705" stroke="#dfeef5" stroke-width="2" opacity="0.35" />
+  <path d="M980 650C1100 620 1240 610 1360 620" stroke="#dfeef5" stroke-width="2" opacity="0.3" />
+</svg>
