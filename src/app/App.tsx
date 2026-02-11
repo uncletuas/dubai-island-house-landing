@@ -209,7 +209,7 @@ export default function App() {
   //   public/images/dubai-islands/hero-aerial.jpg
   //   public/images/dubai-islands/gallery-01.jpg ... gallery-06.jpg
   // If files are missing, ImageWithFallback will render a placeholder.
-  const heroImageSrc = '/images/dubai-islands/hero-aerial.png';
+  const heroImageSrc = '/images/dubai-islands/hero-aerial.jpg';
   const whatsappMessage =
     'Hi, I’m interested in the Dubai Islands waterfront properties. Please share the full project details, prices, and current availability.';
   const whatsappLink = `https://wa.me/971585574022?text=${encodeURIComponent(whatsappMessage)}`;
