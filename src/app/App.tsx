@@ -9,6 +9,7 @@ import {
   Quote,
   ShieldCheck,
   Star,
+  MessageCircle,
 } from 'lucide-react';
 import { formspreeEndpoint, leadSubmitUrl, supabaseAnonKey } from '../lib/supabaseEnv';
 
@@ -209,6 +210,10 @@ export default function App() {
   //   public/images/dubai-islands/gallery-01.jpg ... gallery-06.jpg
   // If files are missing, ImageWithFallback will render a placeholder.
   const heroImageSrc = '/images/dubai-islands/hero-aerial.png';
+  const whatsappMessage =
+    'Hi, I’m interested in the Dubai Islands waterfront properties. Please share the full project details, prices, and current availability.';
+  const whatsappLink = `https://wa.me/971585574022?text=${encodeURIComponent(whatsappMessage)}`;
+
   const gallery = [
     {
       src: '/images/dubai-islands/gallery-01-aerial-panorama.png',
@@ -245,17 +250,16 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center overflow-hidden">
-        <div className="absolute inset-0">
+      <section className="bg-[#031a2a]">
+        <div className="mx-auto max-w-[1170px]">
           <ImageWithFallback
             src={heroImageSrc}
             alt="Dubai Islands waterfront aerial view"
-            className="w-full h-full object-cover"
+            className="w-full h-auto block"
           />
-          <div className="absolute inset-0 bg-black/55" />
         </div>
 
-        <div className="relative z-10 w-full px-4 py-16">
+        <div className="relative z-10 w-full px-4 py-16 md:py-20 bg-gradient-to-b from-[#031a2a] to-[#062640]">
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 text-white/90 px-4 py-2 text-sm mb-6">
@@ -503,7 +507,7 @@ export default function App() {
             </div>
             <div>
               <a
-                href="https://wa.me/971000000000?text=Please%20share%20Dubai%20Islands%20project%20details"
+                href={whatsappLink}
                 target="_blank"
                 rel="noreferrer"
                 className="text-gray-700 hover:underline"
@@ -516,6 +520,17 @@ export default function App() {
           <p className="text-gray-500 text-xs mt-6">© 2026 DubaiIslandHouse.com</p>
         </div>
       </footer>
+
+      <a
+        href={whatsappLink}
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Contact us on WhatsApp"
+        className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:brightness-95 focus:outline-none focus:ring-4 focus:ring-[#25D366]/40"
+      >
+        <MessageCircle className="w-5 h-5" />
+        WhatsApp
+      </a>
     </div>
   );
 }
