@@ -221,7 +221,7 @@ export default function App() {
       caption: 'Marina waterfront',
     },
     {
-      src: '/images/dubai-islands/gallery-03-premium-interiors.png',
+      src: '/images/dubai-islands/gallery-06-amenities.png',
       alt: 'Premium interiors',
       caption: 'Premium interiors',
     },
@@ -236,7 +236,7 @@ export default function App() {
       caption: 'Beach & leisure lifestyle',
     },
     {
-      src: '/images/dubai-islands/gallery-06-amenities.png',
+      src: '/images/dubai-islands/gallery-03-premium-interiors.png',
       alt: 'Lifestyle amenities',
       caption: 'Resort-style amenities',
     },
@@ -272,17 +272,7 @@ export default function App() {
                 available.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button
-                  onClick={scrollToForm}
-                  className="bg-[#D4AF37] hover:bg-[#C5A028] text-black px-8 py-4 text-lg font-semibold transition-all duration-300"
-                >
-                  Get Full Project Details
-                </button>
-                <div className="text-white/80 text-sm leading-relaxed sm:max-w-xs">
-                  Submit your details to receive the latest brochure, pricing, and availability.
-                </div>
-              </div>
+
             </div>
 
             <div className="lg:col-span-5">
