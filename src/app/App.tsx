@@ -208,35 +208,35 @@ export default function App() {
   //   public/images/dubai-islands/hero-aerial.jpg
   //   public/images/dubai-islands/gallery-01.jpg ... gallery-06.jpg
   // If files are missing, ImageWithFallback will render a placeholder.
-  const heroImageSrc = '/images/dubai-islands/hero-aerial.svg';
+  const heroImageSrc = '/images/dubai-islands/hero-aerial.png';
   const gallery = [
     {
-      src: '/images/dubai-islands/gallery-01-aerial-panorama.svg',
+      src: '/images/dubai-islands/gallery-01-aerial-panorama.png',
       alt: 'Dubai Islands aerial panorama',
       caption: 'Aerial Dubai Islands panorama',
     },
     {
-      src: '/images/dubai-islands/gallery-02-marina-waterfront.svg',
+      src: '/images/dubai-islands/gallery-02-marina-waterfront.png',
       alt: 'Marina waterfront at Dubai Islands',
       caption: 'Marina waterfront',
     },
     {
-      src: '/images/dubai-islands/gallery-03-premium-interiors.svg',
+      src: '/images/dubai-islands/gallery-03-premium-interiors.png',
       alt: 'Premium interiors',
       caption: 'Premium interiors',
     },
     {
-      src: '/images/dubai-islands/gallery-04-balcony-water-views.svg',
+      src: '/images/dubai-islands/gallery-04-balcony-water-views.png',
       alt: 'Balcony with water views',
       caption: 'Balcony water views',
     },
     {
-      src: '/images/dubai-islands/gallery-05-beach-lifestyle.svg',
+      src: '/images/dubai-islands/gallery-05-beach-lifestyle.png',
       alt: 'Beach lifestyle',
       caption: 'Beach & leisure lifestyle',
     },
     {
-      src: '/images/dubai-islands/gallery-06-amenities.svg',
+      src: '/images/dubai-islands/gallery-06-amenities.png',
       alt: 'Lifestyle amenities',
       caption: 'Resort-style amenities',
     },
