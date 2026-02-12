@@ -204,12 +204,10 @@ export default function App() {
     );
   };
 
-  // NOTE: These image paths are intentionally local (fast + controllable).
-  // Replace them with your Dubai Islands-specific hero/gallery assets:
-  //   public/images/dubai-islands/hero-aerial.jpg
-  //   public/images/dubai-islands/gallery-01.jpg ... gallery-06.jpg
-  // If files are missing, ImageWithFallback will render a placeholder.
-  const heroImageSrc = '/images/dubai-islands/hero-aerial.jpg';
+  // NOTE: Gallery images are local (fast + controllable).
+  // The hero image can be local or a remote URL.
+  const heroImageSrc =
+    'https://image2url.com/r2/default/images/1770879225976-57c5bb4d-65f2-4b11-8f26-5b5d20c1080d.jpg';
   const whatsappMessage =
     'Hi, I’m interested in the Dubai Islands waterfront properties. Please share the full project details, prices, and current availability.';
   const whatsappLink = `https://wa.me/971585574022?text=${encodeURIComponent(whatsappMessage)}`;
