@@ -18,7 +18,123 @@ type LeadFormProps = {
   title?: string;
   subtitle?: string;
   variant?: 'card' | 'plain';
+  formData: { name: string; whatsapp: string; email: string };
+  setFormData: React.Dispatch<React.SetStateAction<{ name: string; whatsapp: string; email: string }>>;
+  isSubmitted: boolean;
+  isSubmitting: boolean;
+  isUsingFormspree: boolean;
+  redirectUrl: string;
+  handleSubmit: (e: React.FormEvent) => Promise<void>;
 };
+
+function LeadForm({
+  id,
+  title = 'Get Full Project Details',
+  subtitle = 'Receive pricing, floor plans, and availability — shared privately.',
+  variant = 'card',
+  formData,
+  setFormData,
+  isSubmitted,
+  isSubmitting,
+  isUsingFormspree,
+  redirectUrl,
+  handleSubmit,
+}: LeadFormProps) {
+  const containerClass =
+    variant === 'card'
+      ? 'bg-white/95 backdrop-blur border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.25)] rounded-sm'
+      : 'bg-white border border-gray-200 rounded-sm';
+
+  return (
+    <div id={id} className={containerClass}>
+      <div className={variant === 'card' ? 'p-8 md:p-10' : 'p-8 md:p-10'}>
+        <h2 className={variant === 'card' ? 'text-2xl md:text-3xl mb-2' : 'text-3xl md:text-4xl mb-3'}>
+          {title}
+        </h2>
+        <p className={variant === 'card' ? 'text-gray-700 mb-6' : 'text-gray-600 mb-8'}>{subtitle}</p>
+
+        {isSubmitted ? (
+          <div className="bg-green-50 border-2 border-green-500 p-8 rounded-sm text-center">
+            <CheckCircle2 className="w-14 h-14 mx-auto mb-4 text-green-600" />
+            <h3 className="text-2xl mb-2">Thank You!</h3>
+            <p className="text-gray-700">Our team will contact you shortly.</p>
+          </div>
+        ) : (
+          <form
+            onSubmit={isUsingFormspree ? undefined : handleSubmit}
+            action={isUsingFormspree ? formspreeEndpoint : undefined}
+            method={isUsingFormspree ? 'POST' : undefined}
+            className="space-y-4"
+          >
+            {isUsingFormspree && (
+              <>
+                {/* Redirect back to this page after successful submission */}
+                <input type="hidden" name="_redirect" value={redirectUrl} />
+                <input type="hidden" name="_next" value={redirectUrl} />
+                <input type="hidden" name="source" value="dubaiislandhouse.com" />
+                <input type="hidden" name="timestamp" value={new Date().toISOString()} />
+              </>
+            )}
+
+            <label className="sr-only" htmlFor={`${id ?? 'lead-form'}-name`}>
+              Full Name
+            </label>
+            <input
+              id={`${id ?? 'lead-form'}-name`}
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+              className="w-full px-5 py-3.5 border border-gray-300 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 transition-all"
+            />
+
+            <label className="sr-only" htmlFor={`${id ?? 'lead-form'}-email`}>
+              Email
+            </label>
+            <input
+              id={`${id ?? 'lead-form'}-email`}
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              required
+              className="w-full px-5 py-3.5 border border-gray-300 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 transition-all"
+            />
+
+            <label className="sr-only" htmlFor={`${id ?? 'lead-form'}-whatsapp`}>
+              WhatsApp / Phone
+            </label>
+            <input
+              id={`${id ?? 'lead-form'}-whatsapp`}
+              type="tel"
+              name="whatsapp"
+              placeholder="WhatsApp / Phone"
+              value={formData.whatsapp}
+              onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+              required
+              className="w-full px-5 py-3.5 border border-gray-300 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 transition-all"
+            />
+
+            <button
+              type="submit"
+              disabled={!isUsingFormspree && isSubmitting}
+              className="w-full bg-[#D4AF37] hover:bg-[#C5A028] text-black px-8 py-4 text-lg font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {!isUsingFormspree && isSubmitting ? 'Submitting…' : 'Get Full Project Details'}
+            </button>
+
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Your details are kept private and solely used to share project information.
+            </p>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function App() {
   const [formData, setFormData] = useState({
@@ -102,108 +218,6 @@ export default function App() {
     document.getElementById('lead-form')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const LeadForm = ({
-    id,
-    title = 'Get Full Project Details',
-    subtitle = 'Receive pricing, floor plans, and availability — shared privately.',
-    variant = 'card',
-  }: LeadFormProps) => {
-    const containerClass =
-      variant === 'card'
-        ? 'bg-white/95 backdrop-blur border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.25)] rounded-sm'
-        : 'bg-white border border-gray-200 rounded-sm';
-
-    return (
-      <div id={id} className={containerClass}>
-        <div className={variant === 'card' ? 'p-8 md:p-10' : 'p-8 md:p-10'}>
-          <h2 className={variant === 'card' ? 'text-2xl md:text-3xl mb-2' : 'text-3xl md:text-4xl mb-3'}>
-            {title}
-          </h2>
-          <p className={variant === 'card' ? 'text-gray-700 mb-6' : 'text-gray-600 mb-8'}>{subtitle}</p>
-
-          {isSubmitted ? (
-            <div className="bg-green-50 border-2 border-green-500 p-8 rounded-sm text-center">
-              <CheckCircle2 className="w-14 h-14 mx-auto mb-4 text-green-600" />
-              <h3 className="text-2xl mb-2">Thank You!</h3>
-              <p className="text-gray-700">Our team will contact you shortly.</p>
-            </div>
-          ) : (
-            <form
-              onSubmit={isUsingFormspree ? undefined : handleSubmit}
-              action={isUsingFormspree ? formspreeEndpoint : undefined}
-              method={isUsingFormspree ? 'POST' : undefined}
-              className="space-y-4"
-            >
-              {isUsingFormspree && (
-                <>
-                  {/* Redirect back to this page after successful submission */}
-                  <input type="hidden" name="_redirect" value={redirectUrl} />
-                  <input type="hidden" name="_next" value={redirectUrl} />
-                  <input type="hidden" name="source" value="dubaiislandhouse.com" />
-                  <input type="hidden" name="timestamp" value={new Date().toISOString()} />
-                </>
-              )}
-
-              <label className="sr-only" htmlFor={`${id ?? 'lead-form'}-name`}>
-                Full Name
-              </label>
-              <input
-                id={`${id ?? 'lead-form'}-name`}
-                type="text"
-                name="name"
-                placeholder="Full Name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-                className="w-full px-5 py-3.5 border border-gray-300 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 transition-all"
-              />
-
-              <label className="sr-only" htmlFor={`${id ?? 'lead-form'}-email`}>
-                Email
-              </label>
-              <input
-                id={`${id ?? 'lead-form'}-email`}
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-                className="w-full px-5 py-3.5 border border-gray-300 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 transition-all"
-              />
-
-              <label className="sr-only" htmlFor={`${id ?? 'lead-form'}-whatsapp`}>
-                WhatsApp / Phone
-              </label>
-              <input
-                id={`${id ?? 'lead-form'}-whatsapp`}
-                type="tel"
-                name="whatsapp"
-                placeholder="WhatsApp / Phone"
-                value={formData.whatsapp}
-                onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
-                required
-                className="w-full px-5 py-3.5 border border-gray-300 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 transition-all"
-              />
-
-              <button
-                type="submit"
-                disabled={!isUsingFormspree && isSubmitting}
-                className="w-full bg-[#D4AF37] hover:bg-[#C5A028] text-black px-8 py-4 text-lg font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {!isUsingFormspree && isSubmitting ? 'Submitting…' : 'Get Full Project Details'}
-              </button>
-
-              <p className="text-xs text-gray-600 leading-relaxed">
-                Your details are kept private and solely used to share project information.
-              </p>
-            </form>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   // NOTE: Gallery images are local (fast + controllable).
   // The hero image can be local or a remote URL.
   const heroImageSrc =
@@ -283,9 +297,17 @@ export default function App() {
                 id="lead-form"
                 variant="card"
                 title="Request Full Details"
-                subtitle="Get the brochure, pricing, and unit availability." 
+                subtitle="Get the brochure, pricing, and unit availability."
+                formData={formData}
+                setFormData={setFormData}
+                isSubmitted={isSubmitted}
+                isSubmitting={isSubmitting}
+                isUsingFormspree={isUsingFormspree}
+                redirectUrl={redirectUrl}
+                handleSubmit={handleSubmit}
               />
             </div>
+
           </div>
         </div>
       </section>
@@ -488,9 +510,17 @@ export default function App() {
               id="lead-form-bottom"
               variant="plain"
               title="Get Full Project Details"
-              subtitle="Your details are kept private and used only to share project information." 
+              subtitle="Your details are kept private and used only to share project information."
+              formData={formData}
+              setFormData={setFormData}
+              isSubmitted={isSubmitted}
+              isSubmitting={isSubmitting}
+              isUsingFormspree={isUsingFormspree}
+              redirectUrl={redirectUrl}
+              handleSubmit={handleSubmit}
             />
           </div>
+
         </div>
       </section>
 
